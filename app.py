@@ -4,25 +4,16 @@ import os
 import aws_cdk as cdk
 
 from nested_stack_section_4.nested_stack_section_4_stack import NestedStackSection4Stack
+from nested_stack_section_4.network_stack import NetworkStack
 
 
 app = cdk.App()
-NestedStackSection4Stack(app, "NestedStackSection4Stack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+root_stack = cdk.Stack(app, 'RootStack')                    # Creating a root stack. Set scope to app variable, to create it under your CDK app. Instead of creating your root stack in app.py, you can also define your root stack as a seperate class file (just like network_stack.py, but then e.g. root_stack.py), and move the nested stack definitions to that file. 
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+network_stack = NetworkStack(root_stack, 'NetworkStack')    # Changing scope of the nested stacks to the root_stack instead of to the CKD app: NetworkStack(root_stack...) instead of NetworkStack(app...)
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+NestedStackSection4Stack(root_stack, "NestedStackSection4Stack",  # Changing scope of the nested stacks to the root_stack instead of to the CKD app: NestedStackSection4Stack(root_stack...) instead of NestedStackSection4Stack(app...)
+                         my_vpc=network_stack.vpc)
 
 app.synth()
